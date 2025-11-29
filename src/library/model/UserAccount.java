@@ -1,34 +1,37 @@
 package library.model;
 
 public class UserAccount {
+
     private long id;
     private String username;
-    private String password;
+    private String passwordHash;
     private String email;
     private String status;
-    private Role role;
+    private int roleId;         // role_id từ DB
+    private String roleName;    // tên quyền: Admin / Staff / Member
 
     public UserAccount() {}
 
-    public UserAccount(long id, String username, String password,
-                       String email, String status, Role role) {
+    public UserAccount(long id, String username, String passwordHash,
+                       String email, String status, int roleId, String roleName) {
         this.id = id;
         this.username = username;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.email = email;
         this.status = status;
-        this.role = role;
+        this.roleId = roleId;
+        this.roleName = roleName;
     }
 
-    // Getter – Setter
+    // ===== Getter – Setter =====
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -36,21 +39,21 @@ public class UserAccount {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public int getRoleId() { return roleId; }
+    public void setRoleId(int roleId) { this.roleId = roleId; }
+
+    public String getRoleName() { return roleName; }
+    public void setRoleName(String roleName) { this.roleName = roleName; }
 
     @Override
     public String toString() {
-        return "UserAccount{id=" + id +
-               ", username='" + username + '\'' +
-               ", email='" + email + '\'' +
-               ", status='" + status + '\'' +
-               ", role=" + (role != null ? role.getRoleName() : "null") +
-               '}';
-    }
-
-    public void setPasswordHash(String pass) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPasswordHash'");
+        return "UserAccount{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", status='" + status + '\'' +
+                ", roleId=" + roleId +
+                ", roleName='" + roleName + '\'' +
+                '}';
     }
 }

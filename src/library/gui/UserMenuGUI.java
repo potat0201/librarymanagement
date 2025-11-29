@@ -79,5 +79,10 @@ public class UserMenuGUI extends JFrame {
             this.dispose();
             new LoginGUI().setVisible(true);
         });
+        btnViewBooks.addActionListener(e -> new BookListGUI(currentUser).setVisible(true));
+        btnBorrow.addActionListener(e -> new BorrowGUI(currentUser).setVisible(true));
+        
+        btnHistory.addActionListener(e -> new BorrowHistoryGUI(currentUser).setVisible(true));
+
     }
 }

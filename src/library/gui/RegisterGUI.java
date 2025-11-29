@@ -1,90 +1,106 @@
 package library.gui;
 
-import library.model.Role;
 import library.model.UserAccount;
 import library.service.UserServiceDB;
-import library.exception.FileProcessingException;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class RegisterGUI extends JFrame {
 
-    private JTextField txtUser, txtEmail;
-    private JPasswordField txtPass;
-
+    private JTextField txtUsername, txtEmail;
+    private JPasswordField txtPassword, txtConfirm;
     private UserServiceDB userService = new UserServiceDB();
 
     public RegisterGUI() {
         setTitle("Đăng ký tài khoản");
-        setSize(350, 250);
+        setSize(400, 350);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(4, 2, 10, 10));
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        add(new JLabel("Username:"));
-        txtUser = new JTextField();
-        add(txtUser);
+        initComponents();
+    }
 
-        add(new JLabel("Password:"));
-        txtPass = new JPasswordField();
-        add(txtPass);
+    private void initComponents() {
+        JPanel panel = new JPanel(new GridLayout(6, 2, 5, 5));
+        panel.setBorder(BorderFactory.createTitledBorder("Thông tin đăng ký"));
 
-        add(new JLabel("Email:"));
+        panel.add(new JLabel("Username:"));
+        txtUsername = new JTextField();
+        panel.add(txtUsername);
+
+        panel.add(new JLabel("Email:"));
         txtEmail = new JTextField();
-        add(txtEmail);
+        panel.add(txtEmail);
+
+        panel.add(new JLabel("Password:"));
+        txtPassword = new JPasswordField();
+        panel.add(txtPassword);
+
+        panel.add(new JLabel("Xác nhận mật khẩu:"));
+        txtConfirm = new JPasswordField();
+        panel.add(txtConfirm);
 
         JButton btnRegister = new JButton("Đăng ký");
-        add(btnRegister);
+        JButton btnCancel = new JButton("Hủy");
 
+        panel.add(btnRegister);
+        panel.add(btnCancel);
+
+        add(panel);
+
+        // ====== EVENTS ======
         btnRegister.addActionListener(e -> register());
+        btnCancel.addActionListener(e -> {
+            new LoginGUI().setVisible(true);
+            this.dispose();
+        });
     }
 
     private void register() {
-    try {
-        long id = System.currentTimeMillis();
-        String uname = txtUser.getText();
-        String pass = new String(txtPass.getPassword());
-        String email = txtEmail.getText();
+        String username = txtUsername.getText().trim();
+        String email = txtEmail.getText().trim();
+        String password = new String(txtPassword.getPassword());
+        String confirm = new String(txtConfirm.getPassword());
 
-        // Tạo UserAccount mới
-        UserAccount user = new UserAccount();
-        user.setId(id);
-        user.setUsername(uname);
-        user.setPasswordHash(pass);
-        user.setEmail(email);
-        user.setStatus("Active");
-
-        // Gán role = 3 (Độc giả/User)
-        Role role = new Role();
-        role.setId(3);          // id = 3 trong bảng role
-        role.setRoleName("Độc giả");
-        user.setRole(role);
-
-        boolean ok = userService.register(user);
-
-        if (ok) {
-            JOptionPane.showMessageDialog(this,
-                    "Đăng ký thành công!",
-                    "Thành công",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            this.dispose();
-            new LoginGUI().setVisible(true);
-
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Đăng ký thất bại!",
-                    "Lỗi",
-                    JOptionPane.ERROR_MESSAGE);
+        // ==== VALIDATION ====
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+            return;
         }
 
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this,
-                "Có lỗi xảy ra!",
-                "Lỗi",
-                JOptionPane.ERROR_MESSAGE);
-    }
-}
+        if (!password.equals(confirm)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu xác nhận không khớp!");
+            return;
+        }
 
+        // ==== CHECK TRÙNG USERNAME ====
+        if (userService.findByUsername(username) != null) {
+            JOptionPane.showMessageDialog(this, "Username đã tồn tại!");
+            return;
+        }
+
+        // ==== TẠO USER ====
+        UserAccount newUser = new UserAccount();
+        newUser.setUsername(username);
+        newUser.setEmail(email);
+
+        // nếu bạn dùng hash -> sửa chỗ này
+        newUser.setPasswordHash(password);
+
+        // member = role_id = 3
+        newUser.setRoleId(3);
+        newUser.setStatus("Active");
+
+        boolean ok = userService.register(newUser);
+
+        if (ok) {
+            JOptionPane.showMessageDialog(this, "Đăng ký thành công, hãy đăng nhập!");
+
+            new LoginGUI().setVisible(true);
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Lỗi khi đăng ký!");
+        }
+    }
 }

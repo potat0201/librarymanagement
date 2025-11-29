@@ -80,4 +80,35 @@ public class BookCopyDAO {
             return false;
         }
     }
+
+    public BookCopy getAvailableCopy(long bookId) {
+    String sql = """
+            SELECT * FROM book_copy
+            WHERE book_id = ? AND status = 'Available'
+            LIMIT 1
+            """;
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setLong(1, bookId);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return new BookCopy(
+                    rs.getLong("copy_id"),
+                    rs.getLong("book_id"),
+                    rs.getLong("import_id"),
+                    rs.getString("location"),
+                    rs.getString("status")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
+
 }

@@ -14,4 +14,11 @@ public class UserServiceDB {
     public boolean register(UserAccount user) {
         return userDAO.register(user);
     }
+    public UserAccount findByUsername(String username) {
+    return userDAO.getByUsername(username);
+    }
+
+   
+
+    
 }

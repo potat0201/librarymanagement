@@ -69,6 +69,33 @@ public class BookDAO {
     return null;
 }
 
+public Book getBookByTitle(String title) {
+    String sql = "SELECT * FROM book WHERE LOWER(title) LIKE LOWER(?) LIMIT 1";
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, "%" + title + "%");
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return new Book(
+                    rs.getLong("book_id"),
+                    rs.getString("title"),
+                    rs.getString("isbn"),
+                    rs.getString("description"),
+                    rs.getDate("publish_date").toLocalDate(),
+                    rs.getLong("publisher_id")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+
 public boolean addBook(Book b) {
     String sql = "INSERT INTO book (title, isbn, description, publish_date, publisher_id) VALUES (?, ?, ?, ?, ?)";
 

@@ -75,5 +75,18 @@ public class AdminMenuGUI extends JFrame {
             this.dispose();
             new LoginGUI().setVisible(true);
         });
+
+        btnManageBooks.addActionListener(e -> {
+            new BookCRUDGUI().setVisible(true);
+        });
+
+        btnManageLoans.addActionListener(e -> {
+            new BorrowReturnAdminGUI().setVisible(true); // nếu chưa có file này thì mình sẽ viết mẫu
+        });
+
+        btnManageUsers.addActionListener(e -> {
+            new UserManagementGUI().setVisible(true); // file này bạn chưa tạo
+        });
+
     }
 }

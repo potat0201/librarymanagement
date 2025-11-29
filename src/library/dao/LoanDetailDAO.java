@@ -8,6 +8,8 @@ import library.model.LoanDetail;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoanDetailDAO {
 
@@ -69,4 +71,46 @@ public class LoanDetailDAO {
 
         return null;
     }
+
+    public List<LoanDetail> getHistoryByMemberId(long memberId) {
+    List<LoanDetail> list = new ArrayList<>();
+
+    String sql = """
+        SELECT ld.id AS detail_id, ld.copy_id, l.*
+        FROM loan_detail ld
+        JOIN loan l ON ld.loan_id = l.loan_id
+        WHERE l.member_id = ?
+        ORDER BY l.loan_date DESC
+    """;
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setLong(1, memberId);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            Loan loan = new Loan();
+            loan.setId(rs.getLong("loan_id"));
+            loan.setLoanDate(rs.getDate("loan_date").toLocalDate());
+            loan.setReturnDate(rs.getDate("return_date") != null ? rs.getDate("return_date").toLocalDate() : null);
+            loan.setStatus(rs.getString("status"));
+
+            BookCopy copy = new BookCopy();
+            copy.setCopyId(rs.getLong("copy_id"));
+
+            LoanDetail d = new LoanDetail();
+            d.setLoan(loan);
+            d.setCopy(copy);
+
+            list.add(d);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
 }

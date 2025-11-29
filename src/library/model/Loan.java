@@ -3,21 +3,24 @@ package library.model;
 import java.time.LocalDate;
 
 public class Loan {
-
-    private long id;            // loan_id
-    private long memberId;      // FK -> member
-    private long staffId;       // FK -> staff
+    private long id;
+    private long memberId;
+    private long staffId;
     private LocalDate loanDate;
     private LocalDate dueDate;
     private LocalDate returnDate;
-    private String status;
-    private int renewalCount;
+    private String status;   // Borrowed / Returned / Overdue...
+
+    // 🔴 Thêm mới
+    private double fee;      // số tiền cần thu
+    private String paid;     // Yes / No
 
     public Loan() {}
 
     public Loan(long id, long memberId, long staffId,
                 LocalDate loanDate, LocalDate dueDate,
-                LocalDate returnDate, String status, int renewalCount) {
+                LocalDate returnDate, String status,
+                double fee, String paid) {
         this.id = id;
         this.memberId = memberId;
         this.staffId = staffId;
@@ -25,10 +28,11 @@ public class Loan {
         this.dueDate = dueDate;
         this.returnDate = returnDate;
         this.status = status;
-        this.renewalCount = renewalCount;
+        this.fee = fee;
+        this.paid = paid;
     }
 
-    // Getter & Setter
+    // === Getter – Setter ===
 
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
@@ -51,28 +55,24 @@ public class Loan {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public int getRenewalCount() { return renewalCount; }
-    public void setRenewalCount(int renewalCount) { this.renewalCount = renewalCount; }
+    public double getFee() { return fee; }
+    public void setFee(double fee) { this.fee = fee; }
+
+    public String getPaid() { return paid; }
+    public void setPaid(String paid) { this.paid = paid; }
 
     @Override
     public String toString() {
-        return "Loan{id=" + id +
+        return "Loan{" +
+                "id=" + id +
                 ", memberId=" + memberId +
                 ", staffId=" + staffId +
                 ", loanDate=" + loanDate +
                 ", dueDate=" + dueDate +
-                ", status=" + status +
-                ", renewalCount=" + renewalCount +
+                ", returnDate=" + returnDate +
+                ", status='" + status + '\'' +
+                ", fee=" + fee +
+                ", paid='" + paid + '\'' +
                 '}';
-    }
-
-    public void setStaff(Staff staff) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setStaff'");
-    }
-
-    public void setMember(Member member) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setMember'");
     }
 }
