@@ -5,41 +5,47 @@ import library.dao.LoanDAO;
 import library.dao.LoanDetailDAO;
 import library.model.Loan;
 import library.model.LoanDetail;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class LoanService {
 
     private LoanDAO loanDAO = new LoanDAO();
     private LoanDetailDAO detailDAO = new LoanDetailDAO();
     private BookCopyDAO copyDAO = new BookCopyDAO();
+    
+    // Áp dụng Đa hình: Khai báo Interface, khởi tạo Class thực thi
+    private IFeePolicy feePolicy = new StandardFeePolicy(); 
 
-    // === BORROW BOOK ===
     public boolean borrowBook(long memberId, long copyId, long staffId) {
-
         Loan loan = new Loan();
         loan.setMemberId(memberId);
         loan.setStaffId(staffId);
-        loan.setLoanDate(LocalDate.now());
-        loan.setDueDate(LocalDate.now().plusDays(14));
+        loan.setLoanDate(LocalDateTime.now());
+        loan.setDueDate(LocalDateTime.now().plusDays(14)); 
         loan.setStatus("Borrowed");
-
-        // 🔴 Thêm hệ thống phí mặc định
-        loan.setFee(5000);
+        
+        // Gọi phương thức tính phí qua Interface (Đa hình)
+        loan.setFee(feePolicy.calculateFee());
+        
         loan.setPaid("No");
 
         long loanId = loanDAO.createLoan(loan);
         if (loanId == -1) return false;
 
-        // Tạo Loan Detail
-        LoanDetail detail = new LoanDetail();
-        detail.setLoan(loan);
-        detail.setCopy(copyDAO.getCopyById(copyId));
+        boolean okDetail = detailDAO.createDetail(loanId, copyId);
+        boolean okCopy = copyDAO.updateStatus(copyId, "Borrowed");
 
-        boolean ok = detailDAO.createDetail(loanId, copyId);
+        return okDetail && okCopy;
+    }
 
-        if (!ok) return false;
+    public boolean returnBook(long loanId, long copyId) {
+        boolean updateLoan = loanDAO.updateReturn(loanId, LocalDateTime.now());
+        boolean updateCopy = copyDAO.updateStatus(copyId, "Available");
+        return updateLoan && updateCopy;
+    }
 
-        return true;
+    public List<LoanDetail> getLoanHistory(long memberId) {
+        return detailDAO.getHistoryByMemberId(memberId);
     }
 }

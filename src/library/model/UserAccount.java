@@ -1,20 +1,20 @@
 package library.model;
 
-public class UserAccount {
-
-    private long id;
+public class UserAccount extends BaseEntity {
     private String username;
     private String passwordHash;
     private String email;
     private String status;
-    private int roleId;         // role_id từ DB
-    private String roleName;    // tên quyền: Admin / Staff / Member
+    private int roleId;
+    private String roleName;
 
-    public UserAccount() {}
+    public UserAccount() {
+        super();
+    }
 
     public UserAccount(long id, String username, String passwordHash,
                        String email, String status, int roleId, String roleName) {
-        this.id = id;
+        super(id);
         this.username = username;
         this.passwordHash = passwordHash;
         this.email = email;
@@ -23,9 +23,7 @@ public class UserAccount {
         this.roleName = roleName;
     }
 
-    // ===== Getter – Setter =====
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    // Đã có getId/setId từ BaseEntity
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -47,13 +45,6 @@ public class UserAccount {
 
     @Override
     public String toString() {
-        return "UserAccount{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", status='" + status + '\'' +
-                ", roleId=" + roleId +
-                ", roleName='" + roleName + '\'' +
-                '}';
+        return username + " (" + roleName + ")";
     }
 }

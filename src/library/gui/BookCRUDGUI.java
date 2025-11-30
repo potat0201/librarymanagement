@@ -1,5 +1,6 @@
 package library.gui;
 
+import library.dao.BookCopyDAO;
 import library.dao.BookDAO;
 import library.model.Book;
 
@@ -14,15 +15,16 @@ public class BookCRUDGUI extends JFrame {
     private JTable table;
     private DefaultTableModel model;
 
-    private JTextField txtId, txtTitle, txtIsbn, txtPublisherId;
+    // Đã xóa txtPublisherId
+    private JTextField txtId, txtTitle, txtIsbn, txtPublishDate, txtQuantity;
     private JTextArea txtDescription;
-    private JTextField txtPublishDate;
 
     private BookDAO bookDAO = new BookDAO();
+    private BookCopyDAO copyDAO = new BookCopyDAO();
 
     public BookCRUDGUI() {
-        setTitle("Quản lý sách (Admin)");
-        setSize(900, 500);
+        setTitle("Quản lý sách & Kho (Admin)");
+        setSize(1000, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -33,16 +35,18 @@ public class BookCRUDGUI extends JFrame {
     private void initComponents() {
         setLayout(new BorderLayout());
 
-        // ===== TABLE =====
-        String[] cols = {"ID", "Tiêu đề", "ISBN", "Ngày XB", "Publisher"};
+        // ===== TABLE (Bỏ cột Publisher) =====
+        String[] cols = {"ID", "Tiêu đề", "ISBN", "Ngày XB", "Số lượng Copy"};
         model = new DefaultTableModel(cols, 0);
         table = new JTable(model);
+        
         table.getSelectionModel().addListSelectionListener(e -> loadSelectedBook());
+        
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // ===== FORM =====
+        // ===== FORM (Giảm số dòng vì bỏ Publisher) =====
         JPanel form = new JPanel(new GridLayout(6, 2, 5, 5));
-        form.setBorder(BorderFactory.createTitledBorder("Thông tin sách"));
+        form.setBorder(BorderFactory.createTitledBorder("Thông tin sách & Kho"));
 
         form.add(new JLabel("ID:"));
         txtId = new JTextField();
@@ -65,22 +69,23 @@ public class BookCRUDGUI extends JFrame {
         txtPublishDate = new JTextField();
         form.add(txtPublishDate);
 
-        form.add(new JLabel("Publisher ID:"));
-        txtPublisherId = new JTextField();
-        form.add(txtPublisherId);
+        form.add(new JLabel("Số lượng bản in:"));
+        txtQuantity = new JTextField();
+        form.add(txtQuantity);
 
         add(form, BorderLayout.EAST);
 
         // ===== BUTTONS =====
         JPanel btnPanel = new JPanel();
-
-        JButton btnAdd = new JButton("Thêm");
-        JButton btnUpdate = new JButton("Sửa");
+        JButton btnAdd = new JButton("Thêm mới");
+        JButton btnUpdate = new JButton("Cập nhật / Nhập thêm");
         JButton btnDelete = new JButton("Xóa");
+        JButton btnClear = new JButton("Làm mới form");
 
         btnPanel.add(btnAdd);
         btnPanel.add(btnUpdate);
         btnPanel.add(btnDelete);
+        btnPanel.add(btnClear);
 
         add(btnPanel, BorderLayout.SOUTH);
 
@@ -88,6 +93,7 @@ public class BookCRUDGUI extends JFrame {
         btnAdd.addActionListener(e -> addBook());
         btnUpdate.addActionListener(e -> updateBook());
         btnDelete.addActionListener(e -> deleteBook());
+        btnClear.addActionListener(e -> clearForm());
     }
 
     private void loadData() {
@@ -95,12 +101,14 @@ public class BookCRUDGUI extends JFrame {
         List<Book> list = bookDAO.getAllBooks();
 
         for (Book b : list) {
+            int total = copyDAO.countTotalCopies(b.getId());
+            
             model.addRow(new Object[]{
                     b.getId(),
                     b.getTitle(),
                     b.getIsbn(),
                     b.getPublishDate(),
-                    b.getPublisherId()
+                    total
             });
         }
     }
@@ -113,12 +121,22 @@ public class BookCRUDGUI extends JFrame {
         txtTitle.setText(model.getValueAt(row, 1).toString());
         txtIsbn.setText(model.getValueAt(row, 2).toString());
         txtPublishDate.setText(model.getValueAt(row, 3).toString());
-        txtPublisherId.setText(model.getValueAt(row, 4).toString());
+        // Cột số lượng giờ là cột index 4
+        txtQuantity.setText(model.getValueAt(row, 4).toString());
 
-        // Mô tả phải load từ DB vì bảng không hiển thị
         long id = Long.parseLong(txtId.getText());
         Book b = bookDAO.getBookById(id);
-        txtDescription.setText(b.getDescription());
+        if (b != null) txtDescription.setText(b.getDescription());
+    }
+
+    private void clearForm() {
+        txtId.setText("");
+        txtTitle.setText("");
+        txtIsbn.setText("");
+        txtDescription.setText("");
+        txtPublishDate.setText("");
+        txtQuantity.setText("");
+        table.clearSelection();
     }
 
     private void addBook() {
@@ -128,57 +146,85 @@ public class BookCRUDGUI extends JFrame {
                     txtTitle.getText(),
                     txtIsbn.getText(),
                     txtDescription.getText(),
-                    LocalDate.parse(txtPublishDate.getText()),
-                    Long.parseLong(txtPublisherId.getText())
+                    LocalDate.parse(txtPublishDate.getText())
             );
 
-            if (bookDAO.addBook(b)) {
+            long newBookId = bookDAO.addBookAndGetId(b);
+
+            if (newBookId != -1) {
+                int qty = 0;
+                try {
+                    qty = Integer.parseInt(txtQuantity.getText());
+                } catch (NumberFormatException e) { qty = 0; }
+
+                if (qty > 0) {
+                    copyDAO.addCopies(newBookId, qty);
+                }
+
                 JOptionPane.showMessageDialog(this, "Thêm sách thành công!");
                 loadData();
+                clearForm();
             } else {
-                JOptionPane.showMessageDialog(this, "Lỗi khi thêm!");
+                JOptionPane.showMessageDialog(this, "Lỗi khi thêm sách!");
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ!");
         }
     }
 
     private void updateBook() {
         try {
+            long bookId = Long.parseLong(txtId.getText());
+            
             Book b = new Book(
-                    Long.parseLong(txtId.getText()),
+                    bookId,
                     txtTitle.getText(),
                     txtIsbn.getText(),
                     txtDescription.getText(),
-                    LocalDate.parse(txtPublishDate.getText()),
-                    Long.parseLong(txtPublisherId.getText())
+                    LocalDate.parse(txtPublishDate.getText())
             );
 
-            if (bookDAO.updateBook(b)) {
-                JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
-                loadData();
-            } else {
-                JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật!");
-            }
+            bookDAO.updateBook(b);
+
+            int currentQty = copyDAO.countTotalCopies(bookId);
+            int inputQty = Integer.parseInt(txtQuantity.getText());
+
+            if (inputQty > currentQty) {
+                int diff = inputQty - currentQty;
+                int confirm = JOptionPane.showConfirmDialog(this, 
+                    "Bạn có muốn nhập thêm " + diff + " bản copy?", 
+                    "Nhập thêm sách", JOptionPane.YES_NO_OPTION);
+                
+                if (confirm == JOptionPane.YES_OPTION) {
+                    copyDAO.addCopies(bookId, diff);
+                }
+            } 
+
+            JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+            loadData();
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sách để sửa!");
         }
     }
 
     private void deleteBook() {
+        if (txtId.getText().isEmpty()) return;
+        
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Xóa sách này?",
-                "Xác nhận",
+                "Xóa sách này sẽ xóa TOÀN BỘ copy và lịch sử mượn liên quan.\nTiếp tục?",
+                "Cảnh báo xóa",
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm != JOptionPane.YES_OPTION) return;
 
-        long id = Long.parseLong(txtId.getText());
-        if (bookDAO.deleteBook(id)) {
+        if (bookDAO.deleteBook(Long.parseLong(txtId.getText()))) {
             JOptionPane.showMessageDialog(this, "Đã xóa!");
             loadData();
+            clearForm();
         } else {
-            JOptionPane.showMessageDialog(this, "Không thể xóa!");
+            JOptionPane.showMessageDialog(this, "Lỗi xóa!");
         }
     }
 }
