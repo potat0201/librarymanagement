@@ -11,7 +11,6 @@ public class Role {
         this.name = name;
     }
 
-    // Getter – Setter
     public long getId() {
         return id;
     }

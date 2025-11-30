@@ -14,7 +14,7 @@ public class BookDAO {
 
     public List<Book> searchBooks(String keyword) {
         List<Book> list = new ArrayList<>();
-        // Query không còn publisher_id
+        
         String sql = "SELECT book_id, title, isbn, description, publish_date FROM book WHERE LOWER(title) LIKE LOWER(?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -56,7 +56,7 @@ public class BookDAO {
     }
 
     public long addBookAndGetId(Book b) {
-        // Bỏ publisher_id trong câu Insert
+        
         String sql = "INSERT INTO book (title, isbn, description, publish_date) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -74,7 +74,7 @@ public class BookDAO {
     }
 
     public boolean updateBook(Book b) {
-        // Bỏ publisher_id trong câu Update
+        
         String sql = "UPDATE book SET title=?, isbn=?, description=?, publish_date=? WHERE book_id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -96,7 +96,7 @@ public class BookDAO {
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
     
-    // Giữ hàm cũ để tương thích
+    
     public Book getBookByTitle(String t) { return null; }
     public boolean addBook(Book b) { return addBookAndGetId(b) != -1; }
 }

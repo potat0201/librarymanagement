@@ -63,7 +63,7 @@ public class RegisterGUI extends JFrame {
         String password = new String(txtPassword.getPassword());
         String confirm = new String(txtConfirm.getPassword());
 
-        // ==== VALIDATION ====
+        // kiểm tra input
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
             return;
@@ -74,21 +74,19 @@ public class RegisterGUI extends JFrame {
             return;
         }
 
-        // ==== CHECK TRÙNG USERNAME ====
+        // check trùng username
         if (userService.findByUsername(username) != null) {
             JOptionPane.showMessageDialog(this, "Username đã tồn tại!");
             return;
         }
 
-        // ==== TẠO USER ====
+        // tạo user
         UserAccount newUser = new UserAccount();
         newUser.setUsername(username);
         newUser.setEmail(email);
 
-        // nếu bạn dùng hash -> sửa chỗ này
         newUser.setPasswordHash(password);
 
-        // member = role_id = 3
         newUser.setRoleId(3);
         newUser.setStatus("Active");
 

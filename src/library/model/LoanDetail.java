@@ -3,8 +3,8 @@ package library.model;
 public class LoanDetail {
 
     private long id;
-    private Loan loan;        // tham chiếu tới Loan
-    private BookCopy copy;    // tham chiếu tới BookCopy
+    private Loan loan;        
+    private BookCopy copy;    
 
     public LoanDetail() {
     }

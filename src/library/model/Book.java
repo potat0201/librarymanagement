@@ -13,14 +13,13 @@ public class Book extends BaseEntity {
     }
 
     public Book(long id, String title, String isbn, String description, LocalDate publishDate) {
-        super(id); // Gọi constructor lớp cha để set ID
+        super(id); 
         this.title = title;
         this.isbn = isbn;
         this.description = description;
         this.publishDate = publishDate;
     }
 
-    // Đã có getId/setId từ BaseEntity
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

@@ -40,13 +40,10 @@ public class LoginGUI extends JFrame {
         add(btnExit);
         add(btnRegister);
 
-        // Sự kiện Login
         btnLogin.addActionListener(e -> doLogin());
 
-        // Sự kiện Exit
         btnExit.addActionListener(e -> System.exit(0));
 
-        // 👉 Sự kiện mở màn hình Đăng ký
         btnRegister.addActionListener(e -> {
             new RegisterGUI().setVisible(true);
             this.dispose();

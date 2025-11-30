@@ -55,8 +55,6 @@ public class AdminMenuGUI extends JFrame {
 
         add(panel);
 
-        // ===== CÁC SỰ KIỆN (Đã dọn dẹp code trùng lặp) =====
-
         // 1. Mở quản lý sách
         btnManageBooks.addActionListener(e -> {
             new BookCRUDGUI().setVisible(true);
@@ -72,15 +70,15 @@ public class AdminMenuGUI extends JFrame {
             new UserManagementGUI().setVisible(true);
         });
 
-        // 4. ĐĂNG XUẤT (FIX LỖI KHÔNG TẮT CỬA SỔ)
+        // 4. ĐĂNG XUẤT
         btnLogout.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this, 
                     "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", 
                     JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
-                this.dispose(); // Tắt cửa sổ Admin hiện tại
-                new LoginGUI().setVisible(true); // Mở lại màn hình Login
+                this.dispose(); 
+                new LoginGUI().setVisible(true); 
             }
         });
     }

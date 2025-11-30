@@ -25,9 +25,7 @@ public class UserDAO {
         return null;
     }
 
-    // === SỬA LẠI: ROLE MEMBER ID LÀ 2 ===
     public boolean register(UserAccount u) {
-        // Thay số 3 thành số 2
         String sql = "INSERT INTO user_account(username, password_hash, email, status, role_id) VALUES (?, ?, ?, 'Active', 2)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -54,10 +52,8 @@ public class UserDAO {
         return null;
     }
 
-    // === SỬA LẠI: ROLE MEMBER ID LÀ 2 ===
     public List<UserAccount> getAllMembers() {
         List<UserAccount> list = new ArrayList<>();
-        // Thay role_id = 3 thành role_id = 2
         String sql = "SELECT u.user_id, u.username, u.email, u.status, r.role_name FROM user_account u JOIN role r ON u.role_id = r.role_id WHERE r.role_name = 'Member' OR u.role_id = 2";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);

@@ -79,19 +79,19 @@ public class ReturnGUI extends JFrame {
         btnReturn.addActionListener(e -> returnBook());
     }
 
-    // ================== TẢI THÔNG TIN LOAN ===================
+    // tải thông tin loan
     private void loadLoanInfo() {
         try {
             long loanId = Long.parseLong(txtLoanId.getText().trim());
 
-            // Lấy loan
+            // lấy loan
             Loan loan = loanDAO.getLoanById(loanId);
             if (loan == null) {
                 JOptionPane.showMessageDialog(this, "Loan ID không tồn tại!");
                 return;
             }
 
-            // Lấy loan_detail
+            // lấy loan_detail
             LoanDetail detail = detailDAO.getDetailByLoanId(loanId);
             if (detail == null) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy LoanDetail của loan!");
@@ -102,7 +102,7 @@ public class ReturnGUI extends JFrame {
 
             txtStatus.setText(loan.getStatus());
 
-            // Lấy Copy → Book
+            // lấy Copy → Book
             BookCopy copy = copyDAO.getCopyById(detail.getCopy().getCopyId());
 
             if (copy == null) {
@@ -118,7 +118,7 @@ public class ReturnGUI extends JFrame {
         }
     }
 
-    // ================== TRẢ SÁCH ===================
+    // trả sách
     private void returnBook() {
         try {
             long loanId = Long.parseLong(txtLoanId.getText().trim());

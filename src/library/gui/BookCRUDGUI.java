@@ -15,7 +15,6 @@ public class BookCRUDGUI extends JFrame {
     private JTable table;
     private DefaultTableModel model;
 
-    // Đã xóa txtPublisherId
     private JTextField txtId, txtTitle, txtIsbn, txtPublishDate, txtQuantity;
     private JTextArea txtDescription;
 
@@ -35,7 +34,6 @@ public class BookCRUDGUI extends JFrame {
     private void initComponents() {
         setLayout(new BorderLayout());
 
-        // ===== TABLE (Bỏ cột Publisher) =====
         String[] cols = {"ID", "Tiêu đề", "ISBN", "Ngày XB", "Số lượng Copy"};
         model = new DefaultTableModel(cols, 0);
         table = new JTable(model);
@@ -44,7 +42,6 @@ public class BookCRUDGUI extends JFrame {
         
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // ===== FORM (Giảm số dòng vì bỏ Publisher) =====
         JPanel form = new JPanel(new GridLayout(6, 2, 5, 5));
         form.setBorder(BorderFactory.createTitledBorder("Thông tin sách & Kho"));
 
@@ -75,7 +72,7 @@ public class BookCRUDGUI extends JFrame {
 
         add(form, BorderLayout.EAST);
 
-        // ===== BUTTONS =====
+        // Các nút
         JPanel btnPanel = new JPanel();
         JButton btnAdd = new JButton("Thêm mới");
         JButton btnUpdate = new JButton("Cập nhật / Nhập thêm");
@@ -89,7 +86,7 @@ public class BookCRUDGUI extends JFrame {
 
         add(btnPanel, BorderLayout.SOUTH);
 
-        // Events
+        
         btnAdd.addActionListener(e -> addBook());
         btnUpdate.addActionListener(e -> updateBook());
         btnDelete.addActionListener(e -> deleteBook());
@@ -121,7 +118,7 @@ public class BookCRUDGUI extends JFrame {
         txtTitle.setText(model.getValueAt(row, 1).toString());
         txtIsbn.setText(model.getValueAt(row, 2).toString());
         txtPublishDate.setText(model.getValueAt(row, 3).toString());
-        // Cột số lượng giờ là cột index 4
+        
         txtQuantity.setText(model.getValueAt(row, 4).toString());
 
         long id = Long.parseLong(txtId.getText());

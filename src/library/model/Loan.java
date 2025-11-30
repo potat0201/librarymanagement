@@ -16,7 +16,6 @@ public class Loan extends BaseEntity {
         super();
     }
 
-    // Đã có getId/setId từ BaseEntity
 
     public long getMemberId() { return memberId; }
     public void setMemberId(long memberId) { this.memberId = memberId; }

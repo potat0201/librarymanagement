@@ -1,7 +1,7 @@
 package library.model;
 
 public abstract class BaseEntity {
-    protected long id; // Thuộc tính chung
+    protected long id; 
 
     public BaseEntity() {}
 
