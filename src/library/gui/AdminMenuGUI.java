@@ -55,38 +55,33 @@ public class AdminMenuGUI extends JFrame {
 
         add(panel);
 
-        // Sự kiện – tạm thời chỉ log + message
-        btnManageBooks.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "TODO: Mở màn hình quản lý sách")
-        );
+        // ===== CÁC SỰ KIỆN (Đã dọn dẹp code trùng lặp) =====
 
-        btnManageLoans.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "TODO: Mở màn hình quản lý mượn/trả")
-        );
-
-        btnManageUsers.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "TODO: Mở màn hình quản lý user")
-        );
-        
-        btnManageBooks.addActionListener(e -> new BookCRUDGUI().setVisible(true));
-
-
-        btnLogout.addActionListener(e -> {
-            this.dispose();
-            new LoginGUI().setVisible(true);
-        });
-
+        // 1. Mở quản lý sách
         btnManageBooks.addActionListener(e -> {
             new BookCRUDGUI().setVisible(true);
         });
 
+        // 2. Mở quản lý mượn trả
         btnManageLoans.addActionListener(e -> {
-            new BorrowReturnAdminGUI().setVisible(true); // nếu chưa có file này thì mình sẽ viết mẫu
+            new BorrowReturnAdminGUI().setVisible(true);
         });
 
+        // 3. Mở quản lý user
         btnManageUsers.addActionListener(e -> {
-            new UserManagementGUI().setVisible(true); // file này bạn chưa tạo
+            new UserManagementGUI().setVisible(true);
         });
 
+        // 4. ĐĂNG XUẤT (FIX LỖI KHÔNG TẮT CỬA SỔ)
+        btnLogout.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                    "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", 
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                this.dispose(); // Tắt cửa sổ Admin hiện tại
+                new LoginGUI().setVisible(true); // Mở lại màn hình Login
+            }
+        });
     }
 }

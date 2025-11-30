@@ -38,10 +38,24 @@ public class UserMenuGUI extends JFrame {
         south.add(btnLogout);
         panel.add(south, BorderLayout.SOUTH);
 
-        add(panel); // QUAN TRỌNG
+        add(panel);
 
-        btnLogout.addActionListener(e -> { this.dispose(); new LoginGUI().setVisible(true); });
+        // ===== CÁC SỰ KIỆN =====
+        
         btnSearchBorrow.addActionListener(e -> new BookListGUI(currentUser).setVisible(true));
+        
         btnHistory.addActionListener(e -> new BorrowHistoryGUI(currentUser).setVisible(true));
+
+        // ĐĂNG XUẤT (FIX LỖI KHÔNG TẮT CỬA SỔ)
+        btnLogout.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                    "Bạn có muốn đăng xuất không?", "Logout", 
+                    JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                this.dispose(); // Lệnh quan trọng để đóng cửa sổ này
+                new LoginGUI().setVisible(true);
+            }
+        });
     }
 }

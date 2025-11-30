@@ -17,6 +17,5 @@ public abstract class BaseEntity {
         this.id = id;
     }
 
-    // Phương thức trừu tượng buộc lớp con phải viết lại (Đa hình)
     public abstract String toString();
 }
