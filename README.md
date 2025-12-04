@@ -114,4 +114,4 @@ Các lớp này kế thừa từ `BaseEntity` (trừ các class phụ trợ):
 
 3.  **Chạy ứng dụng:**
     * Chạy file `src/App.java`.
-    * Đăng nhập bằng tài khoản Admin hoặc đăng ký tài khoản mới để trải nghiệm.
+    * Đăng nhập bằng tài khoản Admin hoặc đăng ký tài khoản mới để trải nghiệm
